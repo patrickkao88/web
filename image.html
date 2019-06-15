@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Patrick</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script> 
+    <!-- Bootstrap core CSS -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="Aboutme/style.css">
+    <!-- Custom styles for this template -->
+    <link href="carousel.css" rel="stylesheet">
+    <link rel="stylesheet" href="image/style.css">
+    </head>
+  <body>
+ <script type="text/javascript">
+    function processImage() {
+        //填上申請好的API KEY
+        var subscriptionKey = "3052dedc0f804c22bc44bbe46ff20af7";
+        //確認區域與所選擇的相同，因為使用免費的，所以區域選West Center US
+        var uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/analyze";
+        
+        var params = {
+           "visualFeatures": "Categories,Description,Color",
+            "details": "",
+            "language": "en",
+        };
+        //顯示分析的圖片
+        var sourceImageUrl = document.getElementById("inputImage").value;
+        document.querySelector("#sourceImage").src = sourceImageUrl;
+        //送出分析
+        $.ajax({
+            url: uriBase+ "?" + $.param(params),
+            // Request header
+            beforeSend: function(xhrObj){
+                xhrObj.setRequestHeader("Content-Type","application/json");
+                xhrObj.setRequestHeader("Ocp-Apim-Subscription-Key", subscriptionKey);
+            },
+            type: "POST",
+            // Request body
+            data: '{"Url":'+'"'+sourceImageUrl+'"}',
+        })
+        .done(function(data) {
+            //顯示JSON內容
+            $("#responseTextArea").val(JSON.stringify(data, null, 2));
+            console.log("[pre0] "+data.predictions[0].probability);
+            console.log("[pre1] "+data.predictions[1].probability);
+            for(var x=0;x<data.predictions.length;x++){
+                if(data.predictions[x].tagName=="YourTagName" & data.predictions[x].probability>=0.8){
+                    $("#resultH1").text("這是"+"YourTagName");
+                    break;
+                }else{
+                    $("#resultH1").html("這不是"+"YourTagName"+"！<br>這怎麼可能是"+"YourTagName！");
+                    break;
+                }
+            }
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            //丟出錯誤訊息
+            var errorString = (errorThrown === "") ? "Error. " : errorThrown + " (" + jqXHR.status + "): ";
+            errorString += (jqXHR.responseText === "") ? "" : jQuery.parseJSON(jqXHR.responseText).message;
+            alert(errorString);
+        });
+    };
+</script>
+
+<h1>Analyze image:</h1>
+輸入一個圖片網址，然後按下 <strong>分析圖片</strong> 按鈕.
+<br><br>
+Image to analyze: <input type="text" name="inputImage" id="inputImage" value="https://www.nationalgeographic.com/content/dam/animals/2019/06/elephant-poaching-botswana/01-elephants-poaching-botswana-nationalgeographic_2207221.jpg" />
+<button onclick="processImage()">分析圖片</button>
+<br><br>
+<div id="wrapper" style="width:1020px; display:table;">
+    <div id="jsonOutput" style="width:600px; display:table-cell;">
+        Response:
+        <br><br>
+        <textarea id="responseTextArea" class="UIInput" style="width:580px; height:400px;"></textarea>
+    </div>
+    <div id="imageDiv" style="width:420px; display:table-cell;">
+        Source image:
+        <br><br>
+        <img id="sourceImage" width="400" />
+        <h1 id="resultH1"></h1>
+    </div>
+</div>
+      
+     <header>
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">HypeBeast</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="index.html">Home </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="RandomSelect.html">Shoes2Wear </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="AutoManagement.html">LaunchDate </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="MindTest.html">HypeTest </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="RPG.html">HypeRPG </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="YT.html">Youtube </a>
+            </li>
+            <li class="nav-item">
+             <a class="nav-link" href="#">Image Recognition <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="AboutMe.html">AboutMe </a>
+            </li>
+<!--
+            <li class="nav-item">
+              <a class="nav-link disabled" href="#">Disabled</a>
+            </li>
+-->
+          </ul>
+          <form class="form-inline mt-2 mt-md-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+        </div>
+      </nav>
+    </header>
+      
+    <footer class="container">
+        <p class="float-right"><a href="#">Back to top</a></p>
+        <p>&copy; 2017-2018 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+      </footer>
+    </main>
+       
+
+    
+     
+    
+    
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="assets/js/vendor/popper.min.js"></script>
+    <script src="dist/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="assets/js/vendor/holder.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+  </body>
+</html>
